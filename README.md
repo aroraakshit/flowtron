@@ -31,6 +31,8 @@ Visit our [website] for audio samples.
 4. Install [PyTorch]
 5. Install python requirements or build docker image
     - Install python requirements: `pip install -r requirements.txt`
+6. Dataset downloads:
+    - 
 
 ## Training from scratch
 1. Update the filelists inside the filelists folder to point to your data
@@ -52,15 +54,18 @@ Dataset dependent layers can be [ignored]
 2. `python train.py -c config.json -p train_config.ignore_layers=["speaker_embedding.weight"] train_config.checkpoint_path="models/flowtron_ljs.pt"`
 
 ## Fine-tuning for few-shot speech synthesis
-1. Download our published [Flowtron LibriTTS2K] model
+1. Download our published [Flowtron LibriTTS2K] model: `!bash drive-download.sh 1sKTImKkU0Cmlhjc_OeUDLrOLIXvUPwnO models/flowtron_libritts2k.pt`
 2. `python train.py -c config.json -p train_config.finetune_layers=["speaker_embedding.weight"] train_config.checkpoint_path="models/flowtron_libritts2k.pt"`
 
 ## Multi-GPU (distributed) and Automatic Mixed Precision Training ([AMP])
 1. `python -m torch.distributed.launch --use_env --nproc_per_node=NUM_GPUS_YOU_HAVE train.py -c config.json -p train_config.output_directory=outdir train_config.fp16=true`
+2. launch tensorboard in background with `tensorboard --logdir=outdir/logs &`
 
 ## Inference demo
 Disable the attention prior and run inference:
-1. `python inference.py -c config.json -f models/flowtron_ljs.pt -w models/waveglow_256channels_v4.pt -t "It is well know that deep generative models have a rich latent space!" -i 0`
+1. Download waveglow model from [here](https://catalog.ngc.nvidia.com/orgs/nvidia/models/waveglow_ljs_256channels/files?version=3): `wget --content-disposition https://api.ngc.nvidia.com/v2/models/nvidia/waveglow_ljs_256channels/versions/3/zip -O waveglow_ljs_256channels_3.zip && unzip waveglow_ljs_256channels_3.zip`
+2. Download the flowtron_ljs model: `wget --content-disposition https://api.ngc.nvidia.com/v2/models/nvidia/adlr/flowtron/versions/Flowtron-LJSpeech/zip -O flowtron_Flowtron-LJSpeech.zip && unzip flowtron_Flowtron-LJSpeech.zip`
+3. `python inference.py -c config.json -f models/flowtron_ljs.pt -w models/waveglow_256channels_ljs_v3.pt -t "It is well known that deep generative models have a rich latent space!" -i 0`
 
 ## Related repos
 [WaveGlow](https://github.com/NVIDIA/WaveGlow) Faster than real time Flow-based
