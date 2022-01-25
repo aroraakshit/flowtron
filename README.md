@@ -51,10 +51,13 @@ Training using a pre-trained model can lead to faster convergence.
 Dataset dependent layers can be [ignored]
 
 1. Download our published [Flowtron LJS], [Flowtron LibriTTS] or [Flowtron LibriTTS2K] model
+    - Download our published [Flowtron LibriTTS2K] model: `!bash drive-download.sh 1sKTImKkU0Cmlhjc_OeUDLrOLIXvUPwnO models/flowtron_libritts2k.pt`
+    - Download the flowtron_ljs model: `wget --content-disposition https://api.ngc.nvidia.com/v2/models/nvidia/adlr/flowtron/versions/Flowtron-LJSpeech/zip -O flowtron_Flowtron-LJSpeech.zip && unzip flowtron_Flowtron-LJSpeech.zip`
+    - Download our published [Flowtron LibriTTS] model: `bash drive-download.sh 1KhJcPawFgmfvwV7tQAOeC253rYstLrs8 models/flowtron_libritts.pt`
 2. `python train.py -c config.json -p train_config.ignore_layers=["speaker_embedding.weight"] train_config.checkpoint_path="models/flowtron_ljs.pt"`
 
 ## Fine-tuning for few-shot speech synthesis
-1. Download our published [Flowtron LibriTTS2K] model: `!bash drive-download.sh 1sKTImKkU0Cmlhjc_OeUDLrOLIXvUPwnO models/flowtron_libritts2k.pt`
+1. Download our published [Flowtron LibriTTS2K] model: `bash drive-download.sh 1sKTImKkU0Cmlhjc_OeUDLrOLIXvUPwnO models/flowtron_libritts2k.pt`
 2. `python train.py -c config.json -p train_config.finetune_layers=["speaker_embedding.weight"] train_config.checkpoint_path="models/flowtron_libritts2k.pt"`
 
 ## Multi-GPU (distributed) and Automatic Mixed Precision Training ([AMP])
