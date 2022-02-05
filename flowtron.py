@@ -19,7 +19,6 @@ import torch
 from torch import nn
 from torch.nn import functional as F
 
-
 def get_gate_mask_from_lengths(lengths):
     """Constructs binary mask from a 1D torch tensor of input lengths
 

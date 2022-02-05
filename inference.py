@@ -38,7 +38,7 @@ from scipy.io.wavfile import write
 
 
 def infer(flowtron_path, waveglow_path, output_dir, text, speaker_id, n_frames,
-          sigma, gate_threshold, seed):
+          sigma, gate_threshold, seed, local=False):
     torch.manual_seed(seed)
     torch.cuda.manual_seed(seed)
 
@@ -51,10 +51,17 @@ def infer(flowtron_path, waveglow_path, output_dir, text, speaker_id, n_frames,
 
     # load flowtron
     model = Flowtron(**model_config).cuda()
-    state_dict = torch.load(flowtron_path, map_location='cpu')['state_dict']
-    model.load_state_dict(state_dict)
+    if local:
+        checkpoint_dict = torch.load(flowtron_path, map_location='cpu')
+        model_dict = checkpoint_dict['model'].state_dict()
+        model.load_state_dict(model_dict)
+        print("Loaded local checkpoint '{}')" .format(flowtron_path))
+    else:
+        state_dict = torch.load(flowtron_path, map_location='cpu')['state_dict']
+        model.load_state_dict(state_dict)
+        print("Loaded Pt checkpoint '{}')" .format(flowtron_path))
     model.eval()
-    print("Loaded checkpoint '{}')" .format(flowtron_path))
+    print("Loaded successfully")
 
     ignore_keys = ['training_files', 'validation_files']
     trainset = Data(
@@ -62,8 +69,12 @@ def infer(flowtron_path, waveglow_path, output_dir, text, speaker_id, n_frames,
         **dict((k, v) for k, v in data_config.items() if k not in ignore_keys))
     speaker_vecs = trainset.get_speaker_id(speaker_id).cuda()
     text = trainset.get_text(text).cuda()
+    # print(text)
+    # print(speaker_vecs)
     speaker_vecs = speaker_vecs[None]
     text = text[None]
+    # print(text)
+    # print(speaker_vecs)
 
     with torch.no_grad():
         residual = torch.cuda.FloatTensor(1, 80, n_frames).normal_() * sigma
@@ -84,11 +95,10 @@ def infer(flowtron_path, waveglow_path, output_dir, text, speaker_id, n_frames,
     audio = audio.cpu().numpy()[0]
     # normalize audio for now
     audio = audio / np.abs(audio).max()
-    print(audio.shape)
+    # print(audio.shape)
 
     write(os.path.join(output_dir, 'sid{}_sigma{}.wav'.format(speaker_id, sigma)),
           data_config['sampling_rate'], audio)
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -107,6 +117,7 @@ if __name__ == "__main__":
     parser.add_argument("-s", "--sigma", default=0.5, type=float)
     parser.add_argument("-g", "--gate", default=0.5, type=float)
     parser.add_argument("--seed", default=1234, type=int)
+    parser.add_argument("-l", "--local", default=False, type=bool)
     args = parser.parse_args()
 
     # Parse configs.  Globals nicer in this case
@@ -115,6 +126,7 @@ if __name__ == "__main__":
 
     global config
     config = json.loads(data)
+    # print("\n\n\n", config, "\n\n\n")
     update_params(config, args.params)
 
     data_config = config["data_config"]
@@ -128,5 +140,6 @@ if __name__ == "__main__":
 
     torch.backends.cudnn.enabled = True
     torch.backends.cudnn.benchmark = False
+
     infer(args.flowtron_path, args.waveglow_path, args.output_dir, args.text,
-          args.id, args.n_frames, args.sigma, args.gate, args.seed)
+            args.id, args.n_frames, args.sigma, args.gate, args.seed, args.local)

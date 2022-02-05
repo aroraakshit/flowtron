@@ -37,6 +37,8 @@ from torch.utils.data.distributed import DistributedSampler
 
 
 def update_params(config, params):
+    print(params)
+    print("\n\n\n", config, "\n\n\n")
     for param in params:
         print(param)
         k, v = param.split("=")

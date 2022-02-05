@@ -1,6 +1,6 @@
 {
     "train_config": {
-        "output_directory": "/outdir",
+        "output_directory": "/akshita/flowtron/outdir",
         "epochs": 10000000,
         "optim_algo": "RAdam",
         "learning_rate": 1e-3,
@@ -24,11 +24,11 @@
         "ctc_loss_start_iter": 10000
     },
     "data_config": {
-        "training_files": "filelists/ljs_audiopaths_text_sid_train_filelist.txt",
-        "validation_files": "filelists/ljs_audiopaths_text_sid_val_filelist.txt",
+        "training_files": "/akshita/flowtron/filelists/ljs_audiopaths_text_sid_train_filelist.txt",
+        "validation_files": "/akshita/flowtron/filelists/ljs_audiopaths_text_sid_val_filelist.txt",
         "text_cleaners": ["flowtron_cleaners"],
         "p_arpabet": 0.5,
-        "cmudict_path": "data/cmudict_dictionary",
+        "cmudict_path": "/akshita/flowtron/data/cmudict_dictionary",
         "sampling_rate": 22050,
         "filter_length": 1024,
         "hop_length": 256,
@@ -38,7 +38,7 @@
         "max_wav_value": 32768.0,
         "use_attn_prior": true,
         "attn_prior_threshold": 0.0,
-        "prior_cache_path": "/attention_prior_cache",
+        "prior_cache_path": "/akshita/flowtron/attention_prior_cache",
         "betab_scaling_factor": 1.0,
         "keep_ambiguous": false
     },
