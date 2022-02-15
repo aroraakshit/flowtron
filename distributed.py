@@ -34,14 +34,15 @@ def init_distributed(rank, num_gpus, dist_backend, dist_url):
     # Set cuda device so everything is done on the right GPU.
     torch.cuda.set_device(rank % torch.cuda.device_count())
 
-    init_method = 'tcp://'
-    master_ip = os.getenv('MASTER_ADDR', 'localhost')
-    master_port = os.getenv('MASTER_PORT', '6000')
-    init_method += master_ip + ':' + master_port
-    torch.distributed.init_process_group(backend='nccl',
-                                         world_size=num_gpus,
-                                         rank=rank,
-                                         init_method=init_method)
+    # init_method = 'tcp://'
+    # master_ip = os.getenv('MASTER_ADDR', 'localhost')
+    # master_port = os.getenv('MASTER_PORT', '6000')
+    # init_method += master_ip + ':' + master_port
+    # torch.distributed.init_process_group(backend='nccl',
+    #                                      world_size=num_gpus,
+    #                                      rank=rank,
+    #                                      init_method=init_method)
+    torch.distributed.init_process_group(backend='nccl')
 
 def _flatten_dense_tensors(tensors):
     """Flatten dense tensors into a contiguous 1D buffer. Assume tensors are of
